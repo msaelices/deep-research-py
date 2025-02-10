@@ -104,6 +104,9 @@ export FIRECRAWL_KEY=your-firecrawl-key-here
 
 # Run the tool
 deep-research
+
+# Run the tool in debug mode
+deep-research --log-level=DEBUG
 ```
 
 ## Requirements
