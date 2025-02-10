@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import typer
 from functools import wraps
 from prompt_toolkit import PromptSession
@@ -34,6 +35,7 @@ async def main(
     concurrency: int = typer.Option(
         default=2, help="Number of concurrent tasks, depending on your API rate limits."
     ),
+    log_level: str = typer.Option("INFO", help="Logging level."),
 ):
     """Deep Research CLI"""
     console.print(
@@ -42,6 +44,9 @@ async def main(
             "[dim]An AI-powered research tool[/dim]"
         )
     )
+
+    # Set up Logging
+    logging.basicConfig(level=log_level)
 
     # Get initial inputs with clear formatting
     query = await async_prompt("\n🔍 What would you like to research? ")

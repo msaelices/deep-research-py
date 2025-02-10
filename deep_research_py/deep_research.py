@@ -1,11 +1,17 @@
-from typing import List, Dict, TypedDict, Optional
-from dataclasses import dataclass
 import asyncio
+import json
+import logging
 import os
+from typing import List, Dict, TypedDict, Optional
+
+from dataclasses import dataclass
 from firecrawl import FirecrawlApp
+
 from .ai.providers import openai_client, trim_prompt
 from .prompt import system_prompt
-import json
+
+
+logger = logging.getLogger(__name__)
 
 
 class SearchResponse(TypedDict):
@@ -34,6 +40,7 @@ class Firecrawl:
     ) -> SearchResponse:
         """Search using Firecrawl SDK in a thread pool to keep it async."""
         try:
+            logger.debug(f"Searching with Firecrawl: {query}")
             # Run the synchronous SDK call in a thread pool
             response = await asyncio.get_event_loop().run_in_executor(
                 None,
@@ -72,7 +79,7 @@ class Firecrawl:
                 return {"data": []}
 
         except Exception as e:
-            print(f"Error searching with Firecrawl: {e}")
+            logger.error(f"Error searching with Firecrawl: {e}")
             print(
                 f"Response type: {type(response) if 'response' in locals() else 'N/A'}"
             )
@@ -266,6 +273,11 @@ async def deep_research(
                     query=serp_query.query,
                     search_result=result,
                     num_follow_up_questions=new_breadth,
+                )
+                logger.debug(f"New learnings: {new_learnings}")
+                logger.debug(f"New URLs: {new_urls}")
+                logger.debug(
+                    f"Follow-up questions: {new_learnings['followUpQuestions']}"
                 )
 
                 all_learnings = learnings + new_learnings["learnings"]
